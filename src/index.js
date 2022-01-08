@@ -1,8 +1,8 @@
 // 이 파일은 수정하시면 안됩니다.
 // 이 파일의 역할은 사용자로부터 입력을 받고 그 입력값을 createMineField 함수에 넘기는 역할입니다.
 
-const { createInterface } = require('readline');
-const createMineField = require('./createMineField');
+const { createInterface } = require("readline");
+const createMineField = require("./createMineField");
 
 const rl = createInterface({
   input: process.stdin,
