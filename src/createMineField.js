@@ -1,5 +1,8 @@
+const validateField = require("./validateField");
+
 function createMineField(fieldInfo) {
   // 원하는 폭탄의 개수가 게임판의 개수보다 많을 경우에 대한 처리
+  validateField(fieldInfo);
 
   // 2차원 배열을 사용자에게 입력받은 숫자에 맞게 생성한다
 
