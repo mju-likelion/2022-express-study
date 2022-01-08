@@ -1,5 +1,6 @@
 const validateField = require("./validateField");
 const setBomb = require("./setBomb");
+const setNumber = require("./setNumber");
 
 function createMineField(fieldInfo) {
   // 원하는 폭탄의 개수가 게임판의 개수보다 많을 경우에 대한 처리
@@ -13,6 +14,7 @@ function createMineField(fieldInfo) {
   setBomb(field, count);
 
   // 폭탄이 아닌 자리들에 알맞는 숫자를 채워넣는다
+  setNumber(field);
 
   // 2차원 배열을 반환한다
   return field;
