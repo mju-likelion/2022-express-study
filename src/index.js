@@ -1,33 +1,76 @@
-// 이 파일은 수정하시면 안됩니다.
-// 이 파일의 역할은 사용자로부터 입력을 받고 그 입력값을 createMineField 함수에 넘기는 역할입니다.
+import express from 'express';
 
-const { createInterface } = require('readline');
-const createMineField = require('./createMineField');
+const app = express();
+const port = 3000;
 
-const rl = createInterface({
-  input: process.stdin,
-  output: process.stdout,
+app.use(express.json());
+
+let nextId = 4;
+
+let movies = [
+  {
+    id: 1,
+    title: 'Avengers',
+  },
+  {
+    id: 2,
+    title: 'Spider-man',
+  },
+  {
+    id: 3,
+    title: 'Harry Potter',
+  },
+];
+
+app.get("/movies", (req, res) => {
+  res.json(movies);
 });
 
-const fieldInfo = {
-  width: 0,
-  height: 0,
-  count: 0,
-};
-
-// 아래 블럭은 사용자로부터 지뢰밭에 대한 정보를 입력받는 코드입니다.
-rl.question("지뢰밭의 가로 길이를 입력해주세요. ", w => {
-  rl.question("지뢰밭의 세로 길이를 입력해주세요. ", h => {
-    rl.question("지뢰의 개수를 입력해주세요. ", c => {
-      fieldInfo.width = +w;
-      fieldInfo.height = +h;
-      fieldInfo.count = +c;
-      rl.close();
+app.get('/movies/:id', (req, res) => {
+  const index = movies.findIndex(movie => movie.id === +req.params.id);
+  if (index === -1) {
+    return res.json({
+      error: "That movie does not exist",
     });
-  });
+  }
+  res.json(movies.filter(movie => movie.id === +req.params.id)[0]);
 });
 
-rl.on("close", function () {
-  const field = createMineField(fieldInfo);
-  console.log(field);
+app.post('/movies', (req, res) => {
+  movies.push({
+    id: nextId++,
+    title: req.body.title,
+  });
+  res.json(movies);
+});
+
+app.put('/movies/:id', (req, res) => {
+  const index = movies.findIndex(movie => movie.id === +req.params.id);
+  if (index === -1) {
+    return res.json({
+      error: "That movie does not exist",
+    });
+  }
+
+  movies[index] = {
+    id: req.params.id,
+    title: req.body.title,
+  };
+  res.json(movies);
+});
+
+app.delete('/movies/:id', (req, res) => {
+  const index = movies.findIndex(movie => movie.id === +req.params.id);
+  if (index === -1) {
+    return res.json({
+      error: "That movie does not exist",
+    });
+  }
+
+  movies = movies.filter(movie => movie.id !== req.params.id);
+  res.json(movies);
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
 });

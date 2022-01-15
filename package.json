@@ -1,12 +1,18 @@
 {
-  "name": "minesweeper",
+  "name": "likelion-2022-express-study",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node src/index.js"
+    "dev": "nodemon --exec babel-node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.2"
   },
   "devDependencies": {
-    "prettier": "^2.5.1"
+    "@babel/core": "^7.16.7",
+    "@babel/node": "^7.16.8",
+    "@babel/preset-env": "^7.16.8",
+    "nodemon": "^2.0.15"
   }
 }
