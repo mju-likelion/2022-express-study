@@ -67,8 +67,10 @@ app.delete('/movies/:id', (req, res) => {
     });
   }
 
-  movies = movies.filter(movie => movie.id !== req.params.id);
-  res.json(movies);
+  movies = movies.filter(movie => movie.id !== +req.params.id);
+  res.json({
+    result: "Movie was successfully deleted"
+  });
 });
 
 app.listen(port, () => {
