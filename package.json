@@ -8,7 +8,10 @@
   },
   "dependencies": {
     "express": "^4.17.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "morgan": "^1.10.0",
+    "sequelize": "^6.15.0",
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",

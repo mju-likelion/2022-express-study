@@ -1,56 +1,16 @@
 import { Router } from "express";
-import { chain, find, pull, remove } from "lodash";
 import checkLoggedIn from "../../middlewares/checkLoggedIn";
+import Post from "../../models/Post";
 
 const router = Router();
 
-let nextId = 2;
-let posts = [
-  {
-    id: 1,
-    content: "lorem ipsum",
-    writer: 1,
-  },
-];
-
-// 요건 실제 DB를 연동하지 않아서 임시로 ORM처럼 함수를 만든 부분이에요
-const myOrm = {
-  findPosts: () => {
-    return posts;
-  },
-  findPostById: id => {
-    const find = posts.filter(post => post.id === id);
-    return find.length === 0 ? null : find[0];
-  },
-  createPost: data => {
-    const index = posts.push({
-      id: nextId++,
-      content: data.content,
-      writer: data.writer,
-    });
-    return posts[index];
-  },
-  updatePost: data => {
-    const { id, content, writer } = data;
-    const result = chain(posts).find({ id: id }).merge({ id, content, writer }).value();
-  },
-  deletePost: id => {
-    posts = remove(posts, post => post.id === id);
-  },
-};
-
-const isMine = req => {
-  const post = find(posts, { id: +req.params.id });
-  return post.id === +req.headers["x-user-id"];
-};
-
-router.get("/", (req, res) => {
-  const posts = myOrm.findPosts();
+router.get("/", async (req, res) => {
+  const posts = await Post.findAll();
   res.json(posts);
 });
 
-router.get("/:id", (req, res) => {
-  const post = myOrm.findPostById(req.params.id);
+router.get("/:id", async (req, res) => {
+  const post = await Post.findOne({ where: { id: req.params.id } });
   if (!post) {
     return res.status(404).json({
       error: "Post not exist",
@@ -62,8 +22,9 @@ router.get("/:id", (req, res) => {
   });
 });
 
-router.post("/", checkLoggedIn, (req, res) => {
-  const post = myOrm.createPost({ content: req.body.content, writer: req.header["x-user-id"] });
+router.post("/", checkLoggedIn, async (req, res) => {
+  console.log(req.header("x-user-id"));
+  const post = await Post.create({ content: req.body.content, writer: req.header("x-user-id") });
   res.json({
     data: {
       post: {
@@ -73,8 +34,10 @@ router.post("/", checkLoggedIn, (req, res) => {
   });
 });
 
-router.put("/:id", checkLoggedIn, (req, res) => {
-  if (!isMine(req)) {
+router.put("/:id", checkLoggedIn, async (req, res) => {
+  const post = await Post.findOne({ where: { id: req.params.id } });
+
+  if (post.writer !== req.header("x-user-id")) {
     return res.json({
       error: {
         message: "Cannot modify post",
@@ -82,11 +45,9 @@ router.put("/:id", checkLoggedIn, (req, res) => {
     });
   }
 
-  myOrm.updatePost({
-    id: req.params.id,
-    content: req.body.content,
-    writer: req.headers["x-user-id"],
-  });
+  await post.update({ content: req.body.content });
+  await post.save();
+
   res.json({
     data: {
       id: req.params.id,
@@ -94,8 +55,10 @@ router.put("/:id", checkLoggedIn, (req, res) => {
   });
 });
 
-router.delete("/:id", checkLoggedIn, (req, res) => {
-  if (!isMine(req)) {
+router.delete("/:id", checkLoggedIn, async (req, res) => {
+  const post = await Post.findOne({ where: { id: req.params.id } });
+
+  if (post.writer !== req.header("x-user-id")) {
     return res.json({
       error: {
         message: "Cannot delete post",
@@ -103,7 +66,7 @@ router.delete("/:id", checkLoggedIn, (req, res) => {
     });
   }
 
-  myOrm.deletePost(req.params.id);
+  await post.destroy();
   res.json({
     data: {
       message: "Successfully deleted",
