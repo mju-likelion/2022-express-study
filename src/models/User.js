@@ -1,4 +1,5 @@
 import { DataTypes, Model } from "sequelize";
+import Follow from "./Follow";
 
 class User extends Model {
   static init(sequelize) {
@@ -32,12 +33,12 @@ class User extends Model {
   static associate(models) {
     models.User.hasMany(models.Post, { foreignKey: "writer" });
     models.User.belongsToMany(models.User, {
-      through: "Follow",
+      through: Follow,
       as: "followers",
       foreignKey: "followingId",
     });
     models.User.belongsToMany(models.User, {
-      through: "Follow",
+      through: Follow,
       as: "following",
       foreignKey: "followerId",
     });

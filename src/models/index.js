@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import User from "./User";
 import Post from "./Post";
+import Follow from "./Follow";
 
 // test를 위해 파일에 저장했습니다
 // sqlite를 메모리에서 띄우려면 아래처럼 하면 돼요
@@ -15,6 +16,7 @@ const models = {
 
 User.init(sequelize);
 Post.init(sequelize);
+Follow.init(sequelize);
 
 User.associate(models);
 Post.associate(models);
